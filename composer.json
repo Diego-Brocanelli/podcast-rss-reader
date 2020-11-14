@@ -1,0 +1,29 @@
+{
+    "name": "diego-brocanelli/podcast-rss-reader",
+    "description": "component for easy handling and management of rss feed for podcasts.",
+    "type": "component",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Diego Brocanelli",
+            "email": "diegod2@msn.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "DiegoBrocanelli\\Podcast\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4",
+        "phpstan/phpstan": "^0.12.55"
+    },
+    "scripts": {
+        "tests" : "vendor/bin/phpunit --testdox --color tests/",
+        "analyse" : "vendor/bin/phpstan analyse src tests --level=4"
+    }
+}
