@@ -32,7 +32,7 @@ composer tests
 The command below will run PHPStan level 4 analysis.
 
 ```bash
-composer code-analysis
+composer analyse
 ```
 
 # Example
@@ -71,26 +71,26 @@ Responsible for returning the base data of the rss feed, with the exception of e
 
 Responsible for returning the `DiegoBrocanelli\Podcast\Image` object with its attributes.
 
-| Attribute  | Type |
+| Methods  | Return |
 |---|---|
-| title | string |
-| url | string |
-| link | string |
+| getTitle() | string |
+| getUrl() | string |
+| getLink() | string |
 
 ## getEpisodes()
 
 Responsible for returning a list of `DiegoBrocanelli\Podcast\Episode` objects with their attributes.
 
-| Attribute  | Type |
+| Methods  | Return |
 |---|---|
-| title | string |
-| link | string |
-| pubDate | DateTime |
-| guid | string |
-| comments | string |
-| category | string |
-| description | string |
-| audio | string |
+| getTitle() | string |
+| getLink() | string |
+| getPubDate() | DateTime |
+| getGuid() | string |
+| getComments() | string |
+| getCategory() | string |
+| getDescription() | string |
+| getAudio() | string |
 
 ## lastBuildDate()
 

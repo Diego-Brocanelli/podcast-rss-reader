@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -22,6 +22,42 @@ final class PodcastTest extends TestCase
             !empty($episodes),
             true
         );
+
+        $episode = $episodes[0];
+
+        $this->assertEquals( is_string($episode->getTitle() ), true );
+        $this->assertEquals( !empty($episode->getTitle() ), true );
+
+        $this->assertEquals( is_string($episode->getLink() ), true );
+        $this->assertEquals( !empty($episode->getLink() ), true );
+
+        $this->assertEquals( $episode->getPubDate() instanceof DateTime, true );
+
+        $this->assertEquals( is_string($episode->getGuid() ), true );
+        $this->assertEquals( !empty($episode->getGuid() ), true );
+
+        $this->assertEquals( is_string($episode->getComments() ), true );
+        $this->assertEquals( !empty($episode->getComments() ), true );
+
+        $this->assertEquals( is_string($episode->getCategory() ), true );
+
+        $this->assertEquals( is_string( $episode->getDescription() ), true );
+
+        $this->assertEquals( is_array($episode->getAudio() ), true );
+        $this->assertEquals( !empty($episode->getAudio() ), true );
+        $this->assertEquals( !empty($episode->getAudio()['url'] ), true );
+        $this->assertEquals( !empty($episode->getAudio()['length'] ), true );
+        $this->assertEquals( !empty($episode->getAudio()['type'] ), true );
+    }
+
+    /**
+     * @test
+     */
+    public function getEpisodesToInvalidPodcastFeed(): void
+    {
+        $this->expectException(\Exception::class);
+
+        ( new Podcast( new Reader('https://www.lambda3.com.br/feed') ) )->getEpisodes();
     }
 
     /**
@@ -59,18 +95,14 @@ final class PodcastTest extends TestCase
 
         $this->assertInstanceOf(Image::class, $image);
 
-        $this->assertClassHasAttribute('title', Image::class);
-        $this->assertClassHasAttribute('url', Image::class);
-        $this->assertClassHasAttribute('link', Image::class);
+        $this->assertEquals( is_string($image->getTitle() ), true );
+        $this->assertEquals( !empty($image->getTitle() ), true );
 
-        $this->assertEquals( is_string($image->title), true );
-        $this->assertEquals( !empty($image->title), true );
+        $this->assertEquals( is_string($image->getLink() ), true );
+        $this->assertEquals( !empty($image->getLink() ), true );
 
-        $this->assertEquals( is_string($image->link), true );
-        $this->assertEquals( !empty($image->link), true );
-
-        $this->assertEquals( is_string($image->url), true );
-        $this->assertEquals( !empty($image->url), true );
+        $this->assertEquals( is_string($image->getUrl() ), true );
+        $this->assertEquals( !empty($image->getUrl() ), true );
     }
 
     /**
@@ -98,7 +130,7 @@ final class PodcastTest extends TestCase
      */
     public function invalidFeed(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         (new Podcast( new Reader('http://diegobrocanelli.com.br') ) );
     }

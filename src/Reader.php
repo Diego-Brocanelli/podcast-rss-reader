@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DiegoBrocanelli\Podcast;
 
-use Exception;
 use InvalidArgumentException;
 use SimpleXMLElement;
 
@@ -21,9 +20,7 @@ class Reader
      */
     public function __construct(string $feed)
     {
-        if($feed === ''){
-            throw new InvalidArgumentException('Please enter a valid rss feed.');
-        }
+        $this->isValidFeed($feed);
 
         $this->feed = $feed;
     }
@@ -33,13 +30,28 @@ class Reader
      */
     public function parse(): Reader
     {
-        $file = file_get_contents($this->feed);
-        $xml  = new SimpleXmlElement($file);
+        $xml = simplexml_load_file( $this->feed );
 
-        foreach ($xml as $elemente) {
-            $this->rss = $elemente;
+        if($xml === false){
+            throw new InvalidArgumentException('Please enter a valid podcast rss feed.');
         }
 
+        $this->rss = $xml;
+
         return $this;
+    }
+
+    private function isValidFeed($feed): void
+    {
+        if( $feed === '' ){
+            throw new InvalidArgumentException('Please enter a valid rss feed.');
+        }
+
+        $file    = file_get_contents($feed);
+        $pattern = '/<rss/';
+        $analize = preg_match($pattern, $file);
+        if($analize === 0){
+            throw new InvalidArgumentException('Please enter a valid podcast rss feed.');
+        }
     }
 }

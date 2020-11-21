@@ -21,9 +21,9 @@ class Podcast
     public DateTime $lastBuildDate;
     public DateTime $pubDate;
     public string $language;
-    public array $episodes;
+    public array $episodes = [];
 
-    private SimpleXMLElement $reader;
+    private array $reader;
 
     /**
      * @param Reader $reader
@@ -32,16 +32,16 @@ class Podcast
     {
         $parser = $reader->parse();
         $xml    = $parser->rss;
-        $info   = (array)$xml;
+        $info   = (array)$xml->channel;
 
         $this->title         = $info['title'];
         $this->link          = $info['link'];
-        $this->description   = $info['description'];
+        $this->description   = is_string($info['description']) ? $info['description'] : '';
         $this->lastBuildDate = new DateTime($info['lastBuildDate']);
-        $this->pubDate       = new DateTime($info['pubDate']);
+        $this->pubDate       = array_key_exists('pubDate', $info) ? new DateTime($info['pubDate']) : new DateTime();
         $this->language      = $info['language'];
 
-        $this->reader = $xml;
+        $this->reader = $info;
     }
 
     /**
@@ -64,12 +64,13 @@ class Podcast
      */
     public function getImageInfo(): Image
     {
-        $info = (array)$this->reader->image;
-        
-        $image       = new Image();
-        $image->title = $info['title'];
-        $image->url   = $info['url'];
-        $image->link  = $info['link'];
+        $info = (array)$this->reader['image'];
+
+        $image = new Image(
+            $info['title'],
+            $info['url'],
+            $info['link']
+        );
 
         return $image;
     }
@@ -79,24 +80,36 @@ class Podcast
      */
     public function getEpisodes(): array
     {
-        foreach ($this->reader->item as $value) {
+        foreach ($this->reader['item'] as $value) {
             $value = (array)$value;
+
+            if( !array_key_exists('enclosure', $value)){
+                throw new \Exception('The feed is possibly not a valid podcast.');
+            }
 
             $atributes = (array)$value['enclosure'];
 
-            $episode              = new Episode();
-            $episode->title       = $value['title'];
-            $episode->link        = $value['link'];
-            $episode->pubDate     = new DateTime($value['pubDate']);
-            $episode->guid        = $value['guid'];
-            $episode->comments    = $value['comments'];
-            $episode->category    = '';
-            $episode->description = is_string($value['description']) ? $value['description'] : '';
-            $episode->audio       = $atributes['@attributes'];
-            
-            $this->episodes[] = $episode;
-        }   
-        
+            $title       = $value['title'];
+            $link        = $value['link'];
+            $pubDate     = new DateTime($value['pubDate']);
+            $guid        = $value['guid'];
+            $comments    = $value['comments'];
+            $category    = '';
+            $description = is_string($value['description']) ? $value['description'] : 'not provided' ;
+            $audio       = $atributes['@attributes'];
+
+            $this->episodes[] = new Episode(
+                $title,
+                $link,
+                $pubDate,
+                $guid,
+                $comments,
+                $category,
+                $description,
+                $audio
+            );
+        }
+
         return $this->episodes;
     }
 
@@ -117,7 +130,7 @@ class Podcast
         $list = [];
         foreach($this->getEpisodes() as $episode){
 
-            $diff = $episode->pubDate->diff($date);
+            $diff = $episode->getPubDate()->diff($date);
 
             if($diff->invert === 0){
                 break;
