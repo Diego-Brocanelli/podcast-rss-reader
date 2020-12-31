@@ -6,8 +6,7 @@ Component for easy handling and management of rss feed for podcasts.
 
 ## Requirements
 
-- PHP >= 7.4.
-- Composer.
+PHP >= 7.4.
 
 ## Instalation
 
