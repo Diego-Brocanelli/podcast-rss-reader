@@ -102,7 +102,9 @@ Allows you to set a date to search for episodes. Bringing all records located fr
 
 # Author
 
-[Diego Brocanelli Francisco](http://www.diegobrocanelli.com.br/)
+<a href="https://www.diegobrocanelli.com.br/">
+<img src="https://avatars2.githubusercontent.com/u/4108889?s=460&v=4" width="150px">
+</a>
 
 # License
 
