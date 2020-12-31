@@ -29,10 +29,24 @@ composer tests
 
 ## Code Analysis
 
-The command below will run PHPStan level 4 analysis.
+The command below will run PHPStan level 8 analysis.
 
 ```bash
 composer analyse
+```
+
+## PHP Code Sniffer
+
+The command below will run PHPStan level 8 analysis.
+
+```bash
+composer phpcs
+```
+
+## Test, Code Analysis and PHP Code Sniffer
+
+```bash
+composer all
 ```
 
 # Example
