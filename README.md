@@ -11,7 +11,7 @@ PHP >= 7.4.
 ## Instalation
 
 ```bash
-composer require diego-brocanelli/podcast-rss-reader dev-master
+composer require diego-brocanelli/podcast-rss-reader dev-main
 ```
 
 # How to contribute
