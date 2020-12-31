@@ -18,8 +18,19 @@ class Episode
     private string $comments;
     private string $category;
     private string $description;
+    /** @var array<int,string> */
     private array $audio;
 
+    /**
+     * @param string $title
+     * @param string $link
+     * @param DateTime $pubDate
+     * @param string $guid
+     * @param string $comments
+     * @param string $category
+     * @param string $description
+     * @param array<int,string> $audio
+     */
     public function __construct(
         string $title,
         string $link,
@@ -29,8 +40,7 @@ class Episode
         string $category,
         string $description,
         array $audio
-    )
-    {
+    ) {
         $this->title       = $title;
         $this->link        = $link;
         $this->pubDate     = $pubDate;
@@ -76,6 +86,9 @@ class Episode
         return $this->description;
     }
 
+    /**
+     * @return array<int,string>
+     */
     public function getAudio(): array
     {
         return $this->audio;

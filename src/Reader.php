@@ -30,9 +30,9 @@ class Reader
      */
     public function parse(): Reader
     {
-        $xml = simplexml_load_file( $this->feed );
+        $xml = simplexml_load_file($this->feed);
 
-        if($xml === false){
+        if ($xml === false) {
             throw new InvalidArgumentException('Please enter a valid podcast rss feed.');
         }
 
@@ -41,16 +41,16 @@ class Reader
         return $this;
     }
 
-    private function isValidFeed($feed): void
+    private function isValidFeed(string $feed): void
     {
-        if( $feed === '' ){
+        if ($feed === '') {
             throw new InvalidArgumentException('Please enter a valid rss feed.');
         }
 
         $file    = file_get_contents($feed);
         $pattern = '/<rss/';
-        $analize = preg_match($pattern, $file);
-        if($analize === 0){
+        $analize = preg_match($pattern, (string)$file);
+        if ($analize === 0) {
             throw new InvalidArgumentException('Please enter a valid podcast rss feed.');
         }
     }

@@ -8,7 +8,6 @@ use DateTime;
 use DiegoBrocanelli\Podcast\Reader;
 use DiegoBrocanelli\Podcast\Episode;
 use DiegoBrocanelli\Podcast\Image;
-use SimpleXMLElement;
 
 /**
  * @author Diego Brocanelli <diegod2@msn.com>
@@ -21,8 +20,9 @@ class Podcast
     public DateTime $lastBuildDate;
     public DateTime $pubDate;
     public string $language;
-    public array $episodes = [];
-
+    /** @var Episode[] */
+    public array $episodes;
+    /** @var Reader[] */
     private array $reader;
 
     /**
@@ -45,7 +45,7 @@ class Podcast
     }
 
     /**
-     * @return array
+     * @return array<string,string|DateTime>
      */
     public function info(): array
     {
@@ -66,24 +66,29 @@ class Podcast
     {
         $info = (array)$this->reader['image'];
 
+        $title = $info['title'] ?? '';
+        $url   = $info['url']   ?? '';
+        $link  = $info['link']  ?? '';
+
         $image = new Image(
-            $info['title'],
-            $info['url'],
-            $info['link']
+            $title,
+            $url,
+            $link
         );
 
         return $image;
     }
 
     /**
-     * @return array
+     * @return array<int,Episode>
      */
     public function getEpisodes(): array
     {
-        foreach ($this->reader['item'] as $value) {
+        $item = (array)$this->reader['item'];
+        foreach ($item as $value) {
             $value = (array)$value;
 
-            if( !array_key_exists('enclosure', $value)){
+            if (!array_key_exists('enclosure', $value)) {
                 throw new \Exception('The feed is possibly not a valid podcast.');
             }
 
@@ -122,17 +127,15 @@ class Podcast
     }
 
     /**
-     * @param DateTime $date
-     * @return array
+     * @return array<int,Episode>
      */
     public function biggerThen(DateTime $date): array
     {
         $list = [];
-        foreach($this->getEpisodes() as $episode){
-
+        foreach ($this->getEpisodes() as $episode) {
             $diff = $episode->getPubDate()->diff($date);
 
-            if($diff->invert === 0){
+            if ($diff->invert === 0) {
                 break;
             }
 
