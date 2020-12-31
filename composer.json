@@ -2,6 +2,7 @@
     "name": "diego-brocanelli/podcast-rss-reader",
     "description": "component for easy handling and management of rss feed for podcasts.",
     "type": "component",
+    "version":"1.0.0",
     "license": "MIT",
     "authors": [
         {
@@ -20,10 +21,14 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.4",
-        "phpstan/phpstan": "^0.12.55"
+        "phpstan/phpstan": "^0.12.55",
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "scripts": {
-        "tests" : "vendor/bin/phpunit --testdox --color tests/",
-        "analyse" : "vendor/bin/phpstan analyse src tests --level=4"
+        "tests":["vendor/bin/phpunit --testdox --color tests/"],
+        "analyse":["vendor/bin/phpstan analyse src --level=8"],
+        "phpcs":["vendor/bin/phpcs --colors --standard=PSR1,PSR12 src"],
+        "phpcbf":["vendor/bin/phpcs --colors --standard=PSR1,PSR12 src"],
+        "all":["@tests", "@analyse", "@phpcs"]
     }
 }
