@@ -12,8 +12,13 @@ final class PodcastTest extends TestCase
     private string $feed = 'https://devnaestrada.com.br/feed.xml';
     private array $feedList = [
         'https://devnaestrada.com.br/feed.xml',
-        'https://www.lucascaton.com.br/podcast/feed.rss',
-        'https://jovemnerd.com.br/feed-nerdcast/'
+        'https://www.lambda3.com.br/feed/podcast/',
+        'https://www.likeaboss.com.br/episodios/feed/like-a-boss/',
+        'https://hipsters.tech/feed/podcast/',
+        'https://databasecast.com.br/feed/',
+        'https://jovemnerd.com.br/feed-nerdcast/',
+        'https://feeds.buzzsprout.com/1651339.rss',
+        'https://toadcast.com.br/qt-series/toadcast-ciencia/feed/',
     ];
 
     /** @test */
@@ -34,12 +39,10 @@ final class PodcastTest extends TestCase
             $this->assertEquals( !empty($episode->getTitle() ), true );
 
             $this->assertEquals( is_string($episode->getLink() ), true );
-            $this->assertEquals( !empty($episode->getLink() ), true );
 
             $this->assertEquals( $episode->getPubDate() instanceof DateTime, true );
 
             $this->assertEquals( is_string($episode->getGuid() ), true );
-            $this->assertEquals( !empty($episode->getGuid() ), true );
 
             $this->assertEquals( is_string($episode->getComments() ), true );
 
@@ -50,7 +53,6 @@ final class PodcastTest extends TestCase
             $this->assertEquals( is_array($episode->getAudio() ), true );
             $this->assertEquals( !empty($episode->getAudio() ), true );
             $this->assertEquals( !empty($episode->getAudio()['url'] ), true );
-            $this->assertEquals( !empty($episode->getAudio()['length'] ), true );
             $this->assertEquals( !empty($episode->getAudio()['type'] ), true );
         }
     }
@@ -71,12 +73,10 @@ final class PodcastTest extends TestCase
         $this->assertEquals( !empty($episode->getTitle() ), true );
 
         $this->assertEquals( is_string($episode->getLink() ), true );
-        $this->assertEquals( !empty($episode->getLink() ), true );
 
         $this->assertEquals( $episode->getPubDate() instanceof DateTime, true );
 
         $this->assertEquals( is_string($episode->getGuid() ), true );
-        $this->assertEquals( !empty($episode->getGuid() ), true );
 
         $this->assertEquals( is_string($episode->getComments() ), true );
 
@@ -87,7 +87,6 @@ final class PodcastTest extends TestCase
         $this->assertEquals( is_array($episode->getAudio() ), true );
         $this->assertEquals( !empty($episode->getAudio() ), true );
         $this->assertEquals( !empty($episode->getAudio()['url'] ), true );
-        $this->assertEquals( !empty($episode->getAudio()['length'] ), true );
         $this->assertEquals( !empty($episode->getAudio()['type'] ), true );
     }
 

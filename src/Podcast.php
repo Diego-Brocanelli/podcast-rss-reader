@@ -36,14 +36,9 @@ class Podcast
         $parser = $reader->parse();
         $xml    = $parser->rss;
 
-        if($xml->getDescription() === null)
-        {
-            throw new InvalidArgumentException('Please enter a valid rss feed.');
-        }
-
         $this->title         = $xml->getTitle() ?? '';
         $this->link          = $xml->getLink()  ?? '';
-        $this->description   = $xml->getDescription();
+        $this->description   = $xml->getDescription() ?? '';
         $this->lastBuildDate = $xml->getLastBuildDate();
         $this->dateCreated   = $xml->getDateCreated() ?? new DateTime();
         $this->dateModified  = $xml->getDateModified();
@@ -95,16 +90,20 @@ class Podcast
     public function getEpisodes(): array
     {
         foreach ($this->reader as $item) {
+            if ($item->getEnclosure() === null) {
+                throw new \InvalidArgumentException('The feed is possibly not a valid podcast.');
+            }
+
             $pattern = '/audio/';
             $analize = preg_match($pattern, $item->getEnclosure()->type);
             if ($analize === 0) {
-                throw new \Exception('The feed is possibly not a valid podcast.');
+                throw new \InvalidArgumentException('The feed is possibly not a valid podcast.');
             }
 
             $title       = $item->getTitle();
-            $link        = $item->getLink();
-            $pubDate     = $item->getDateCreated();
-            $guid        = $item->getLink();
+            $link        = $item->getLink() ?? '';
+            $pubDate     = $item->getDateCreated() ?? new DateTime();
+            $guid        = $item->getLink() ?? '';
             $comments    = $item->getCommentFeedLink() ? $item->getCommentFeedLink() : '';
             $category    = '';
             $description = $item->getDescription();
