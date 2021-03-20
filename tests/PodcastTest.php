@@ -10,10 +10,52 @@ use DiegoBrocanelli\Podcast\Reader;
 final class PodcastTest extends TestCase
 {
     private string $feed = 'https://devnaestrada.com.br/feed.xml';
+    private array $feedList = [
+        'https://devnaestrada.com.br/feed.xml',
+        'https://www.lucascaton.com.br/podcast/feed.rss',
+        'https://jovemnerd.com.br/feed-nerdcast/'
+    ];
 
-    /**
-     * @test
-     */
+    /** @test */
+    public function analyseFeedList(): void
+    {
+        foreach ($this->feedList as $feed){
+            $reader = new Reader($feed);
+            $episodes = (new Podcast($reader))->getEpisodes();
+
+            $this->assertEquals(
+                !empty($episodes),
+                true
+            );
+
+            $episode = $episodes[0];
+
+            $this->assertEquals( is_string($episode->getTitle() ), true );
+            $this->assertEquals( !empty($episode->getTitle() ), true );
+
+            $this->assertEquals( is_string($episode->getLink() ), true );
+            $this->assertEquals( !empty($episode->getLink() ), true );
+
+            $this->assertEquals( $episode->getPubDate() instanceof DateTime, true );
+
+            $this->assertEquals( is_string($episode->getGuid() ), true );
+            $this->assertEquals( !empty($episode->getGuid() ), true );
+
+            $this->assertEquals( is_string($episode->getComments() ), true );
+
+            $this->assertEquals( is_string($episode->getCategory() ), true );
+
+            $this->assertEquals( is_string( $episode->getDescription() ), true );
+
+            $this->assertEquals( is_array($episode->getAudio() ), true );
+            $this->assertEquals( !empty($episode->getAudio() ), true );
+            $this->assertEquals( !empty($episode->getAudio()['url'] ), true );
+            $this->assertEquals( !empty($episode->getAudio()['length'] ), true );
+            $this->assertEquals( !empty($episode->getAudio()['type'] ), true );
+        }
+    }
+
+    // /** @test */
     public function allEpisodes(): void
     {
         $episodes = (new Podcast(new Reader($this->feed) ))->getEpisodes();
@@ -37,7 +79,6 @@ final class PodcastTest extends TestCase
         $this->assertEquals( !empty($episode->getGuid() ), true );
 
         $this->assertEquals( is_string($episode->getComments() ), true );
-        $this->assertEquals( !empty($episode->getComments() ), true );
 
         $this->assertEquals( is_string($episode->getCategory() ), true );
 
@@ -50,19 +91,15 @@ final class PodcastTest extends TestCase
         $this->assertEquals( !empty($episode->getAudio()['type'] ), true );
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function getEpisodesToInvalidPodcastFeed(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         ( new Podcast( new Reader('https://www.lambda3.com.br/feed') ) )->getEpisodes();
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function getInfo(): void
     {
         $info = (new Podcast(new Reader($this->feed) ))->info();
@@ -86,9 +123,7 @@ final class PodcastTest extends TestCase
         $this->assertEquals( !empty($info['language']), true );
     }
 
-    /**
-     * @test
-     */
+    // /** @test */
     public function getImageInfo(): void
     {
         $image = (new Podcast(new Reader($this->feed) ))->getImageInfo();
@@ -105,9 +140,7 @@ final class PodcastTest extends TestCase
         $this->assertEquals( !empty($image->getUrl() ), true );
     }
 
-    /**
-     * @test
-     */
+    // /** @test */
     public function lastBuildDate(): void
     {
         $podcast = (new Podcast(new Reader($this->feed) ))->lastBuildDate();
@@ -115,9 +148,7 @@ final class PodcastTest extends TestCase
         $this->assertInstanceOf(\DateTime::class, $podcast);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function invalidEmptyFeed(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -125,19 +156,15 @@ final class PodcastTest extends TestCase
         (new Podcast(new Reader('') ));
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function invalidFeed(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\Laminas\Feed\Reader\Exception\RuntimeException::class);
 
         (new Podcast( new Reader('http://diegobrocanelli.com.br') ) );
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function biggerThen(): void
     {
         $date = new \DateTime('2020-01-01 00:00:00');
@@ -148,9 +175,7 @@ final class PodcastTest extends TestCase
         $this->assertEquals(count($list) > 0, true);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function invalidDateTobiggerThen(): void
     {
         $this->expectException(TypeError::class);

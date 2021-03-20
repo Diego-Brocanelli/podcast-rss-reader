@@ -2,7 +2,7 @@
     "name": "diego-brocanelli/podcast-rss-reader",
     "description": "component for easy handling and management of rss feed for podcasts.",
     "type": "component",
-    "version":"1.0.0",
+    "version":"2.0.0",
     "license": "MIT",
     "authors": [
         {
@@ -17,7 +17,9 @@
         }
     },
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "laminas/laminas-feed": "^2.14",
+        "laminas/laminas-http": "^2.14"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.4",

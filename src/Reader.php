@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace DiegoBrocanelli\Podcast;
 
 use InvalidArgumentException;
-use SimpleXMLElement;
+use Laminas\Feed\Reader\Reader as LaminasReader;
+use Laminas\Feed\Reader\Feed\Rss;
+use Laminas\Feed\Reader\Feed\FeedInterface;
 
 /**
  * @author Diego Brocanelli <diegod2@msn.com>
@@ -13,7 +15,7 @@ use SimpleXMLElement;
 class Reader
 {
     private string $feed;
-    public SimpleXMLElement $rss;
+    public Rss $rss;
 
     /**
      * @param string $feed
@@ -30,13 +32,7 @@ class Reader
      */
     public function parse(): Reader
     {
-        $xml = simplexml_load_file($this->feed);
-
-        if ($xml === false) {
-            throw new InvalidArgumentException('Please enter a valid podcast rss feed.');
-        }
-
-        $this->rss = $xml;
+        $this->rss = LaminasReader::import($this->feed);
 
         return $this;
     }
@@ -47,11 +43,10 @@ class Reader
             throw new InvalidArgumentException('Please enter a valid rss feed.');
         }
 
-        $file    = file_get_contents($feed);
-        $pattern = '/<rss/';
-        $analize = preg_match($pattern, (string)$file);
-        if ($analize === 0) {
-            throw new InvalidArgumentException('Please enter a valid podcast rss feed.');
+        $feed = LaminasReader::import($feed);
+
+        if ($feed->valid() === false) {
+            throw new InvalidArgumentException('Please enter a valid rss feed.');
         }
     }
 }

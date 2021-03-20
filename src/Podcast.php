@@ -8,6 +8,8 @@ use DateTime;
 use DiegoBrocanelli\Podcast\Reader;
 use DiegoBrocanelli\Podcast\Episode;
 use DiegoBrocanelli\Podcast\Image;
+use InvalidArgumentException;
+use Laminas\Feed\Reader\Feed\Rss;
 
 /**
  * @author Diego Brocanelli <diegod2@msn.com>
@@ -18,12 +20,13 @@ class Podcast
     public string $link;
     public string $description;
     public DateTime $lastBuildDate;
+    public DateTime $dateCreated;
+    public DateTime $dateModified;
     public DateTime $pubDate;
     public string $language;
     /** @var Episode[] */
     public array $episodes;
-    /** @var Reader[] */
-    private array $reader;
+    private Rss $reader;
 
     /**
      * @param Reader $reader
@@ -32,16 +35,21 @@ class Podcast
     {
         $parser = $reader->parse();
         $xml    = $parser->rss;
-        $info   = (array)$xml->channel;
 
-        $this->title         = $info['title'];
-        $this->link          = $info['link'];
-        $this->description   = is_string($info['description']) ? $info['description'] : '';
-        $this->lastBuildDate = new DateTime($info['lastBuildDate']);
-        $this->pubDate       = array_key_exists('pubDate', $info) ? new DateTime($info['pubDate']) : new DateTime();
-        $this->language      = $info['language'];
+        if($xml->getDescription() === null)
+        {
+            throw new InvalidArgumentException('Please enter a valid rss feed.');
+        }
 
-        $this->reader = $info;
+        $this->title         = $xml->getTitle() ?? '';
+        $this->link          = $xml->getLink()  ?? '';
+        $this->description   = $xml->getDescription();
+        $this->lastBuildDate = $xml->getLastBuildDate();
+        $this->dateCreated   = $xml->getDateCreated() ?? new DateTime();
+        $this->dateModified  = $xml->getDateModified();
+        $this->pubDate       = $xml->getDateModified();
+        $this->language      = $xml->getLanguage() ?? '';
+        $this->reader        = $xml;
     }
 
     /**
@@ -54,6 +62,8 @@ class Podcast
             'link'          => $this->link,
             'description'   => $this->description,
             'lastBuildDate' => $this->lastBuildDate,
+            'dateCreated'   => $this->dateCreated,
+            'dateModified'  => $this->dateModified,
             'pubDate'       => $this->pubDate,
             'language'      => $this->language,
         ];
@@ -64,10 +74,10 @@ class Podcast
      */
     public function getImageInfo(): Image
     {
-        $info = (array)$this->reader['image'];
+        $info = $this->reader->getImage();
 
         $title = $info['title'] ?? '';
-        $url   = $info['url']   ?? '';
+        $url   = $info['uri']   ?? '';
         $link  = $info['link']  ?? '';
 
         $image = new Image(
@@ -84,24 +94,21 @@ class Podcast
      */
     public function getEpisodes(): array
     {
-        $item = (array)$this->reader['item'];
-        foreach ($item as $value) {
-            $value = (array)$value;
-
-            if (!array_key_exists('enclosure', $value)) {
+        foreach ($this->reader as $item) {
+            $pattern = '/audio/';
+            $analize = preg_match($pattern, $item->getEnclosure()->type);
+            if ($analize === 0) {
                 throw new \Exception('The feed is possibly not a valid podcast.');
             }
 
-            $atributes = (array)$value['enclosure'];
-
-            $title       = $value['title'];
-            $link        = $value['link'];
-            $pubDate     = new DateTime($value['pubDate']);
-            $guid        = $value['guid'];
-            $comments    = $value['comments'];
+            $title       = $item->getTitle();
+            $link        = $item->getLink();
+            $pubDate     = $item->getDateCreated();
+            $guid        = $item->getLink();
+            $comments    = $item->getCommentFeedLink() ? $item->getCommentFeedLink() : '';
             $category    = '';
-            $description = is_string($value['description']) ? $value['description'] : 'not provided' ;
-            $audio       = $atributes['@attributes'];
+            $description = $item->getDescription();
+            $audio       = (array)$item->getEnclosure();
 
             $this->episodes[] = new Episode(
                 $title,
